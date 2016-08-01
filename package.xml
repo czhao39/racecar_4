@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>racecar_wk3</name>
+  <name>racecar_final</name>
   <version>0.0.0</version>
-  <description>The racecar_wk3 package</description>
+  <description>The racecar_final package</description>
 
   <maintainer email="adithyabsk@gmail.com">Adithya Balaji</maintainer>
   <maintainer email="czhao39@gmail.com">Charles Zhao</maintainer>
