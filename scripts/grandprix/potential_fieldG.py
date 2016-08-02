@@ -59,11 +59,12 @@ class PotentialField:
         dist = sum(msg.ranges[farthest_ind:farthest_ind+4]) / 4
         far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
         far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
+        rospy.loginfo("far_vect_x:  {}, far_vect_y:  {}".format(far_x_component, far_y_component))
         
         # Add together the gradients to create a global gradient showing the robot which direction to travel in
         total_x_component = np.sum(scan_x_components) + kick_x_component + far_x_component
         total_y_component = np.sum(scan_y_components) + kick_y_component  + far_y_component
-        rospy.loginfo("x comp:  {}, y comp:  {}".format(total_x_component, total_y_component))
+        rospy.loginfo("x comp:  {}, y comp:  {}i\n".format(total_x_component, total_y_component))
 
         # Transform this gradient vector into a PoseStamped object
         visualizer_msg = PointStamped()
