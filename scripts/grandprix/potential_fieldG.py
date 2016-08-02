@@ -46,7 +46,7 @@ class PotentialField:
         scan_x_unit_vectors = -np.cos(scan_rad_angles)
         scan_y_unit_vectors = -np.sin(scan_rad_angles)
 
-        ranges = np.array(msg.ranges) - 10
+        ranges = np.array(msg.ranges) - .1
         scan_x_components = (self.charge_laser_particle * scan_x_unit_vectors) / np.square(ranges)
         scan_y_components = (self.charge_laser_particle * scan_y_unit_vectors) / np.square(ranges)
         
@@ -55,13 +55,15 @@ class PotentialField:
         kick_y_component = np.zeros(1)
 
         # Vector to farthest point in front of car
-        farthest_ind = max(i for i in range(180, 901, 4), key=lambda i: sum(msg.ranges[i:i+4])/4)
-        far_x_component = msg.ranges[farthest_ind] * math.sin(math.radians(farthest_ind-90))
-        far_y_component = msg.ranges[farthest_ind] * math.cos(math.radians(farthest_ind-90))
+        farthest_ind = max((i for i in range(180, 901, 4)), key=lambda i: sum(msg.ranges[i:i+4])/4)
+        dist = sum(msg.ranges[farthest_ind:farthest_ind+4]) / 4
+        far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
+        far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
         
         # Add together the gradients to create a global gradient showing the robot which direction to travel in
         total_x_component = np.sum(scan_x_components) + kick_x_component + far_x_component
-        total_y_component = np.sum(scan_y_components) + kick_y_component + far_y_component
+        total_y_component = np.sum(scan_y_components) + kick_y_component  + far_y_component
+        rospy.loginfo("x comp:  {}, y comp:  {}".format(total_x_component, total_y_component))
 
         # Transform this gradient vector into a PoseStamped object
         visualizer_msg = PointStamped()
