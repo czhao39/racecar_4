@@ -28,11 +28,12 @@ PUBLISH_TO = '/vesc/ackermann_cmd_mux/input/navigation'
 NODE_NAME = 'speedController'
 
 prev_speed = 0
-THRESHOLD = 0.2     # threshold for acceleration
+THRESHOLD = 0.1     # threshold for acceleration
 
 # CALLBACK
 
 def callBack(msg):
+    global prev_speed
 
     # if speed is increasing
     if (msg.drive.speed > prev_speed):  
@@ -46,8 +47,8 @@ def callBack(msg):
     prev_speed = msg.drive.speed
 
     # publishes the new drive command
-    DrivePub = rospy.Publisher(PUBLISH_TO, AckermannDriveStamped,queue_size=10
-    self.DrivePub.publish(msg)  # Publishes the message
+    drivePub = rospy.Publisher(PUBLISH_TO, AckermannDriveStamped,queue_size=10)
+    drivePub.publish(msg)  # Publishes the message
 
 
 # MAIN()      

@@ -35,6 +35,7 @@ class PotentialField:
         # output a pose of where we want to go
         self.pub_goal = rospy.Publisher("~potentialFieldGoal", PointStamped, queue_size=1)
         self.pub_nav = rospy.Publisher("/vesc/ackermann_cmd_mux/input/navigation", AckermannDriveStamped, queue_size=1)
+#        self.pub_nav = rospy.Publisher("/drive", AckermannDriveStamped, queue_size=1)
 
     def scan_callback(self, msg):
         # Debug
