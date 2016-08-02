@@ -20,7 +20,7 @@ class RedGreen:
 	self.pub_move = rospy.Publisher("vesc/ackermann_cmd_mux/input/navigation", AckermannDriveStamped, queue_size=1)
         self.sub_blob = rospy.Subscriber("/blobs", BlobDetections, self.cbBlobs, queue_size=1)
         
-        self.kp = .3
+        self.kp = 15
         #self.ki = .05
 	self.ki = 0
 	#self.ki = .03
@@ -86,7 +86,7 @@ class RedGreen:
 	self.pub_move.publish(self.move)
 
     def move_back_cb(self, msg):
-        if self.calcDistance(msg.ranges, "F") > .4:
+        if self.calcDistance(msg.ranges, "F") > .6:
             print "done moving back"
             self.move_back_sub.unregister()
 	    self.move.drive.speed = 0
@@ -112,10 +112,10 @@ class RedGreen:
         self.move.drive.speed = 1
 	if self.right:
 	    self.move.drive.steering_angle = -10
-	    count = 7
+	    count = 6
 	else:
 	    self.move.drive.steering_angle = 10
-	    count = 7
+	    count = 6
 	r = rospy.Rate(6)
 	for i in range(count):
 	    self.pub_move.publish(self.move)
