@@ -37,17 +37,10 @@ class RedGreen:
             self.move.drive.speed = 3
 	    self.move.drive.steering_angle = 0
         else:
-<<<<<<< HEAD
             closest_ind = max(enumerate(msg.sizes), key=lambda x: x[1].data)[0]
             rospy.loginfo("Blob size:  {}".format(msg.sizes[closest_ind].data))
 	    if msg.sizes[closest_ind].data > .11:
                 if (msg.colors[closest_ind].r, msg.colors[closest_ind].g, msg.colors[closest_ind].b) == (150, 150, 255):  # red
-=======
-            closest_ind = max(enumerate(msg.heights), key=lambda x: x[1].data)[0]
-            rospy.loginfo("Blob size:  {}".format(msg.heights[closest_ind].data))
-	    if msg.heights[closest_ind].data > .12:
-                if msg.colors[closest_ind] == "red":  # red
->>>>>>> d7f4373c41e40e70cb4ed61cdb4d08a36fde6301
                     self.right = False
                 else:
                     self.right = True
