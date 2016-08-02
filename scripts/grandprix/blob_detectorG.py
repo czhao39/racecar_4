@@ -12,7 +12,7 @@ from std_msgs.msg import String
 import math
 import time
 import sys
-import RacecarUtilities
+import RacecarUtilitiesG as RacecarUtilities
 
 
 class BlobDetector:
