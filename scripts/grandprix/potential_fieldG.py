@@ -46,18 +46,22 @@ class PotentialField:
         scan_x_unit_vectors = -np.cos(scan_rad_angles)
         scan_y_unit_vectors = -np.sin(scan_rad_angles)
 
-        ##########################
         ranges = np.array(msg.ranges) - 10
-        scan_x_components = (self.charge_laser_particle * scan_x_unit_vectors) / np.square(ranges) * 1.3
-        scan_y_components = (self.charge_laser_particle * scan_y_unit_vectors) / np.square(ranges) * .7
-
+        scan_x_components = (self.charge_laser_particle * scan_x_unit_vectors) / np.square(ranges)
+        scan_y_components = (self.charge_laser_particle * scan_y_unit_vectors) / np.square(ranges)
+        
         # Add the potential for the point behind the robot (to give it a kick)
         kick_x_component = np.ones(1) * self.charge_forward_boost / self.boost_distance**2.0
         kick_y_component = np.zeros(1)
 
+        # Vector to farthest point in front of car
+        farthest_ind = max(i for i in range(180, 901, 4), key=lambda i: sum(msg.ranges[i:i+4])/4)
+        far_x_component = msg.ranges[farthest_ind] * math.sin(math.radians(farthest_ind-90))
+        far_y_component = msg.ranges[farthest_ind] * math.cos(math.radians(farthest_ind-90))
+        
         # Add together the gradients to create a global gradient showing the robot which direction to travel in
-        total_x_component = np.sum(scan_x_components) + kick_x_component
-        total_y_component = np.sum(scan_y_components) + kick_y_component
+        total_x_component = np.sum(scan_x_components) + kick_x_component + far_x_component
+        total_y_component = np.sum(scan_y_components) + kick_y_component + far_y_component
 
         # Transform this gradient vector into a PoseStamped object
         visualizer_msg = PointStamped()
