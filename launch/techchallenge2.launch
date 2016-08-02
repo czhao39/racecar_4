@@ -1,0 +1,6 @@
+<launch>
+    <include file="$(find zed_wrapper)/launch/zed.launch" />
+    <include file="$(find racecar)/launch/teleop.launch" />
+    <node name="blob_detector" type="blob_detector2.py" pkg="racecar_4" />
+    <node name="red_green" type="red_green2.py" pkg="racecar_4" />
+</launch>
