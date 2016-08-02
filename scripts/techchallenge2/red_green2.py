@@ -4,7 +4,7 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import time
-from racecar_4.techchallenge2.msg import BlobDetections2 as BlobDetections
+from racecar_4.msg import BlobDetections2 as BlobDetections
 from ackermann_msgs.msg import AckermannDriveStamped
 from sensor_msgs.msg import LaserScan
 from wall_follower2 import WallFollower

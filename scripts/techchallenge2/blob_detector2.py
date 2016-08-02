@@ -5,7 +5,7 @@ import cv2
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from racecar_4.techchallenge2.msg import BlobDetections2 as BlobDetections
+from racecar_4.msg import BlobDetections2 as BlobDetections
 import math
 import time
 import sys

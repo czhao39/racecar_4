@@ -2,7 +2,7 @@
 
 import rospy
 from ackermann_msgs.msg import AckermannDriveStamped
-from racecar_4.techchallenge2.msg import ObjectDetections2 as ObjectDetections
+from racecar_4.msg import ObjectDetectionsG as ObjectDetections
 
 
 class SafetyController:

@@ -53,6 +53,8 @@ add_message_files(
   ObjectDetections1.msg
   BlobDetections2.msg
   ObjectDetections2.msg
+  BlobDetectionsG.msg
+  ObjectDetectionsG.msg
 )
 
 ## Generate services in the 'srv' folder

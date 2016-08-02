@@ -2,7 +2,7 @@
 
 import rospy
 from sensor_msgs.msg import LaserScan
-from racecar_4.techchallenge2.msg import ObjectDetections2 as ObjectDetections
+from racecar_4.msg import ObjectDetectionsG as ObjectDetections
 import math
 
 
