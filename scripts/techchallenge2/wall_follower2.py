@@ -3,6 +3,7 @@
 import rospy
 from sensor_msgs.msg import LaserScan
 from ackermann_msgs.msg import AckermannDriveStamped
+from std_msgs.msg import Bool
 import time, collections
 
 
@@ -14,7 +15,7 @@ class WallFollower():
 	if is_right:
             self.ddes = .7
         else:
-	    self.ddes = 5
+	    self.ddes = .7
 	self.prev_times = collections.deque([time.clock() for _ in range(10)])
         self.prev_errors = collections.deque([0 for _ in range(4)])
         self.kp = .9

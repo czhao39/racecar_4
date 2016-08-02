@@ -5,6 +5,8 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import time
 from racecar_4.msg import BlobDetections2 as BlobDetections
+from std_msgs.msg import Float64, ColorRGBA
+from geometry_msgs.msg import Point
 from ackermann_msgs.msg import AckermannDriveStamped
 from sensor_msgs.msg import LaserScan
 from wall_follower2 import WallFollower
@@ -35,10 +37,17 @@ class RedGreen:
             self.move.drive.speed = 3
 	    self.move.drive.steering_angle = 0
         else:
+<<<<<<< HEAD
+            closest_ind = max(enumerate(msg.sizes), key=lambda x: x[1].data)[0]
+            rospy.loginfo("Blob size:  {}".format(msg.sizes[closest_ind].data))
+	    if msg.sizes[closest_ind].data > .11:
+                if (msg.colors[closest_ind].r, msg.colors[closest_ind].g, msg.colors[closest_ind].b) == (150, 150, 255):  # red
+=======
             closest_ind = max(enumerate(msg.heights), key=lambda x: x[1].data)[0]
             rospy.loginfo("Blob size:  {}".format(msg.heights[closest_ind].data))
 	    if msg.heights[closest_ind].data > .12:
-                if (msg.colors[closest_ind] == "red":  # red
+                if msg.colors[closest_ind] == "red":  # red
+>>>>>>> d7f4373c41e40e70cb4ed61cdb4d08a36fde6301
                     self.right = False
                 else:
                     self.right = True
@@ -84,14 +93,16 @@ class RedGreen:
 	self.pub_move.publish(self.move)
 
     def move_back_cb(self, msg):
-        if self.calcDistance(msg.ranges, "F") > .7:
+        if self.calcDistance(msg.ranges, "F") > .4:
+            print "done moving back"
             self.move_back_sub.unregister()
 	    self.move.drive.speed = 0
 	    self.pub_move.publish(self.move)
             self.move.drive.speed = 2
 	    self.quarter_turn()
 
-        self.pub_move.publish(self.move)
+        else:
+            self.pub_move.publish(self.move)
 
     def calcDistance(self, ranges, side):
     	lengthx = 0
@@ -99,7 +110,7 @@ class RedGreen:
 	total = 0
 	if side == "F":
 	    total = 0
-	    for count in range(530, 550):
+	    for count in range(535, 545):
 		total += ranges[count]
 	    return total/20
 
@@ -111,7 +122,7 @@ class RedGreen:
 	    count = 7
 	else:
 	    self.move.drive.steering_angle = 10
-	    count = 13
+	    count = 7
 	r = rospy.Rate(6)
 	for i in range(count):
 	    self.pub_move.publish(self.move)
