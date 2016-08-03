@@ -18,6 +18,7 @@ from rospy.numpy_msg import numpy_msg
 import numpy as np
 import math
 import sys
+from racecar_4.msg import BlobDetectionsG as BlobDetections
 
 # simple class to contain the node's variables and code
 class PotentialField:
@@ -31,6 +32,9 @@ class PotentialField:
         self.p_speed = 0.007
         self.p_steering = 1.0
         self.isTesting = False
+        self.turn_vect = 0
+        self.blob_sub = rospy.Subscriber("/blobs", BlobDetections, self.set_turn_vect, queue_size=1)
+        self.turn_start = 0
 
         # subscribe to laserscans. Force output message data to be in numpy arrays.
         rospy.Subscriber("/scan", numpy_msg(LaserScan), self.scan_callback)
@@ -41,6 +45,16 @@ class PotentialField:
 
         if len(sys.argv) == 2:
             self.isTesting = True
+
+    def set_turn_vect(self, msg):
+        closest_ind = max(enumerate(msg.heights), key=lambda x: x[1])[0]
+        if msg.sizes[closest_ind] > .06:
+            if msg.colors[closest_ind] == "red":
+                self.turn_vect = -10
+                self.turn_start = time.clock()
+            elif msg.colors[closest_ind] == "green":
+                self.turn_vect = 10
+                self.turn_start = time.clock()
 
     def scan_callback(self, msg):
         # Debug
@@ -67,11 +81,15 @@ class PotentialField:
         dist = sum(msg.ranges[farthest_ind:farthest_ind+4]) / 4
         far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
         far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
+        
+        if self.turn_vect != 0 and time.clock() - self.start_turn > 1:
+            self.turn_vect = 0
+        
         rospy.loginfo("far_vect_x:  {}, far_vect_y:  {}".format(far_x_component, far_y_component))
         
         # Add together the gradients to create a global gradient showing the robot which direction to travel in
         total_x_component = np.sum(scan_x_components) + kick_x_component + far_x_component
-        total_y_component = np.sum(scan_y_components) + kick_y_component  + far_y_component
+        total_y_component = np.sum(scan_y_components) + kick_y_component  + far_y_component + self.turn_vect
         rospy.loginfo("x comp:  {}, y comp:  {}i\n".format(total_x_component, total_y_component))
 
         # Transform this gradient vector into a PoseStamped object
