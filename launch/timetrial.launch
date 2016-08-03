@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find zed_wrapper)/launch/zed.launch" />
+    <include file="$(find racecar)/launch/teleop.launch" />
+    <node name="commander" type="potential_fieldG.py" pkg="racecar_4" />
+    <node name="stop_stopper" type="stop_stoppingG.py" pkg="racecar_4" />
+    <node name="blob_detector" type="blob_detectorG.py" pkg="racecar_4" />
+</launch>
