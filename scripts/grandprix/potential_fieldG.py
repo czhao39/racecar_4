@@ -11,11 +11,13 @@ import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import PointStamped
 from ackermann_msgs.msg import AckermannDriveStamped
+from std_msgs.msg import String
 
 # Import numpy for sanity
 from rospy.numpy_msg import numpy_msg
 import numpy as np
 import math
+import sys
 
 # simple class to contain the node's variables and code
 class PotentialField:
@@ -28,6 +30,7 @@ class PotentialField:
         self.boost_distance = 0.5
         self.p_speed = 0.007
         self.p_steering = 1.0
+        self.isTesting = False
 
         # subscribe to laserscans. Force output message data to be in numpy arrays.
         rospy.Subscriber("/scan", numpy_msg(LaserScan), self.scan_callback)
@@ -36,9 +39,14 @@ class PotentialField:
         self.pub_goal = rospy.Publisher("~potentialFieldGoal", PointStamped, queue_size=1)
         self.pub_nav = rospy.Publisher("/vesc/ackermann_cmd_mux/input/navigation", AckermannDriveStamped, queue_size=1)
 
+        if len(sys.argv) == 2:
+            self.isTesting = True
+
     def scan_callback(self, msg):
         # Debug
         #print("Starting increment {} increment {}".format(msg.angle_min, msg.angle_increment))
+
+        vectors = []
 
         # Create potential gradients for all laser scan particles
         scan_rad_angles = ( (msg.angle_increment * np.arange(1081, dtype=float)) + msg.angle_min )
@@ -72,6 +80,22 @@ class PotentialField:
         visualizer_msg.point.x = total_x_component
         visualizer_msg.point.y = total_y_component
 
+        if self.isTesting:
+            vectors.append(("LaserScan",int(np.sum(scan_x_components)), int(np.sum(scan_y_components))))
+            vectors.append(("Kick",int(kick_x_component), int(kick_y_component)))
+            vectors.append(("Push",int(far_x_component), int(far_y_component)))
+            vectors.append(("Total",int(total_x_component), int(total_y_component)))
+            # Convert the vectors to a String and publish them
+            vecString = ""
+            for vector in vectors:
+                for i, item in enumerate(vector):
+                    if (i == len(vector)-1): vecString+=(str(item))
+                    else: vecString+=(str(item)+",")
+                vecString+="\n"
+            f = open('/home/racecar/racecar-ws/src/racecar_4/scripts/grandprix/vectorData.txt','w')
+            f.write(vecString)
+            f.close()
+
         # Publish this goal so that we can see it in RVIZ
         self.pub_goal.publish(visualizer_msg)
 
@@ -79,8 +103,8 @@ class PotentialField:
         command_msg = AckermannDriveStamped()
         command_msg.drive.steering_angle = (self.p_steering * np.sign(total_x_component) * math.atan2(total_y_component, total_x_component))
         
-       # r = rospy.Rate(3)
-       # for i in range(3):
+        # r = rospy.Rate(3)
+        # for i in range(3):
         
         command_msg.drive.speed = (self.p_speed * np.sign(total_x_component) * math.sqrt(total_x_component**2 + total_y_component**2))
 

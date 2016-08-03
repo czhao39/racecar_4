@@ -42,7 +42,6 @@ class BlobDetector:
             self.hu = 0
             self.su = 0
             self.vu = 0
-            self.is_tuning = sys.argv[1]
             self.window_thread = RacecarUtilities.StoppableThread(target=self.window_runner)
             self.window_thread.start()
         rospy.loginfo("BlobDetector initialized.")
