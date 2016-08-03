@@ -11,7 +11,8 @@ ax1 = fig.add_subplot(111)
 
 # TODO: optimize using numpy
 def animate(i):
-    pullData = open("/home/racecar/racecar-ws/src/racecar_4/scripts/grandprix/vectorData.txt","r").read()
+    #pullData = open("/home/racecar/racecar-ws/src/racecar_4/scripts/grandprix/vectorData.txt","r").read()
+    pullData = open("/home/racecar-4/racecar-ws/src/racecar/racecar_4/scripts/grandprix/vectorData.txt").read()
     dataArray = pullData.split('\n')
     vectors = []
     labels = []

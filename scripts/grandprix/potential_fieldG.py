@@ -110,7 +110,7 @@ class PotentialField:
                     if (i == len(vector)-1): vecString+=(str(item))
                     else: vecString+=(str(item)+",")
                 vecString+="\n"
-            f = open('/home/racecar/racecar-ws/src/racecar_4/scripts/grandprix/vectorData.txt','w')
+            f = open('/home/racecar-4/racecar-ws/src/racecar/racecar_4/scripts/grandprix/vectorData.txt','w')
             f.write(vecString)
             f.close()
 
