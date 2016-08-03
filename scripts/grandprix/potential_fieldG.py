@@ -47,8 +47,9 @@ class PotentialField:
             self.isTesting = True
 
     def set_turn_vect(self, msg):
+        if len(msg.heights) == 0: return
         closest_ind = max(enumerate(msg.heights), key=lambda x: x[1])[0]
-        if msg.sizes[closest_ind] > .06:
+        if msg.heights[closest_ind] > .06:
             if msg.colors[closest_ind] == "red":
                 self.turn_vect = -10
                 self.turn_start = rospy.get_time()
@@ -82,7 +83,7 @@ class PotentialField:
         far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
         far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
         
-        if self.turn_vect != 0 and rospy.get_time() - self.start_turn > 1:
+        if self.turn_vect != 0 and rospy.get_time() - self.turn_start > 1:
             self.turn_vect = 0
         
         rospy.loginfo("far_vect_x:  {}, far_vect_y:  {}".format(far_x_component, far_y_component))

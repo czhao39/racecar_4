@@ -7,7 +7,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 #import threading
 from racecar_4.msg import BlobDetectionsG as BlobDetections
-#from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point
 import math
 import time
 import sys
@@ -54,7 +54,8 @@ class BlobDetector:
             self.find_color(im, "yellow", cv2.inRange(hsv, np.array([20, 150, 150]), np.array([30, 255, 255])))  # yellow
             self.find_color(im, "blue", cv2.inRange(hsv, np.array([90, 140, 110]), np.array([130, 255, 255])))  # blue
             self.find_color(im, "pink", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # pink
-            self.pub_blobs.publish(self.msg)
+            if len(self.msg.heights) > 0:
+                self.pub_blobs.publish(self.msg)
         else:
             self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
 
