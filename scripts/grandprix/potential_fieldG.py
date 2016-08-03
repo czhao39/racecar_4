@@ -51,10 +51,10 @@ class PotentialField:
         if msg.sizes[closest_ind] > .06:
             if msg.colors[closest_ind] == "red":
                 self.turn_vect = -10
-                self.turn_start = time.clock()
+                self.turn_start = rospy.get_time()
             elif msg.colors[closest_ind] == "green":
                 self.turn_vect = 10
-                self.turn_start = time.clock()
+                self.turn_start = rospy.get_time()
 
     def scan_callback(self, msg):
         # Debug
@@ -82,7 +82,7 @@ class PotentialField:
         far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
         far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
         
-        if self.turn_vect != 0 and time.clock() - self.start_turn > 1:
+        if self.turn_vect != 0 and rospy.get_time() - self.start_turn > 1:
             self.turn_vect = 0
         
         rospy.loginfo("far_vect_x:  {}, far_vect_y:  {}".format(far_x_component, far_y_component))

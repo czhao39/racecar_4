@@ -17,9 +17,7 @@ import RacecarUtilitiesG as RacecarUtilities
 class BlobDetector:
     def __init__(self):
         self.isTesting = False
-        self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')  
         self.bridge = CvBridge()
-        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.pub_blobs = rospy.Publisher("/blobs", BlobDetections, queue_size=1)
         self.sub_image = rospy.Subscriber("/camera/rgb/image_rect_color", Image, self.processImage, queue_size=1)
         
@@ -56,7 +54,7 @@ class BlobDetector:
             self.find_color(im, "yellow", cv2.inRange(hsv, np.array([20, 150, 150]), np.array([30, 255, 255])))  # yellow
             self.find_color(im, "blue", cv2.inRange(hsv, np.array([90, 140, 110]), np.array([130, 255, 255])))  # blue
             self.find_color(im, "pink", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # pink
-            self.pub_blobs.pubish(self.msg)
+            self.pub_blobs.publish(self.msg)
         else:
             self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
 
