@@ -13,7 +13,7 @@ class StopStopper:
 
     def stop_stopping(self, msg):
         if abs(msg.drive.speed) < .2:
-            if rospy.get_time() - self.stop_start > 4:
+            if rospy.get_time() - self.stop_start > 3:
                 self.stop_start = rospy.get_time()
                 msg = AckermannDriveStamped()
                 msg.header.stamp = rospy.Time.now()

@@ -16,10 +16,10 @@ import time
 import sys
 import RacecarUtilities1 as RacecarUtilities
 
-SERTAC_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/sertac.png',0), (100,100), interpolation = cv2.INTER_AREA)
-ARI_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/ari.png',0), (100,100), interpolation = cv2.INTER_AREA)
-CAT_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/cat.png',0), (100,100), interpolation = cv2.INTER_AREA)
-RACECAR_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/racecar.png',0), (100,100), interpolation = cv2.INTER_AREA)
+SERTAC_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar/racecar_4/scripts/techchallenge1/sertac.png',0), (100,100), interpolation = cv2.INTER_AREA)
+ARI_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar/racecar_4/scripts/techchallenge1/ari.png',0), (100,100), interpolation = cv2.INTER_AREA)
+CAT_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar/racecar_4/scripts/techchallenge1/cat.png',0), (100,100), interpolation = cv2.INTER_AREA)
+RACECAR_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar/racecar_4/scripts/techchallenge1/racecar.png',0), (100,100), interpolation = cv2.INTER_AREA)
 
 class BlobDetector:
     def __init__(self):
