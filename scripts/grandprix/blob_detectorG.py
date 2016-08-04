@@ -55,9 +55,10 @@ class BlobDetector:
         if not self.isTesting:
             self.find_color(im, "red", cv2.inRange(hsv, np.array([0, 140, 30]), np.array([10, 240, 150])))       # red
             self.find_color(im, "green", cv2.inRange(hsv, np.array([45, 110, 100]), np.array([65, 210, 150])))   # green
+            #self.find_color(im, "green", cv2.inRange(hsv, np.array([50, .4*255, .15*255]), np.array([77, 255, 255])))  # green
             #self.find_color(im, "orange", cv2.inRange(hsv, np.array([4, 230, 140]), np.array([6, 255, 200])))   # green
             #self.find_color(im, "yellow", cv2.inRange(hsv, np.array([40, 150, 100]), np.array([50, 200, 175])))  # yellow
-            #self.find_color(im, "blue", cv2.inRange(hsv, np.array([90, 140, 110]), np.array([130, 255, 255])))   # blue
+            self.find_color(im, "blue", cv2.inRange(hsv, np.array([100, 120, 15]), np.array([130, 180, 80])))   # blue
             #self.find_color(im, "pink", cv2.inRange(hsv, np.array([170, 210, 160]), np.array([180, 230, 190])))    # pink
             if len(self.msg.heights) > 0:
                 self.pub_blobs.publish(self.msg)
