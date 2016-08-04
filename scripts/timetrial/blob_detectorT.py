@@ -17,10 +17,8 @@ import RacecarUtilitiesG as RacecarUtilities
 
 class BlobDetector:
     def __init__(self):
-        self.isTesting = False
-        self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')  
+        self.isTesting = False 
         self.bridge = CvBridge()
-        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.pub_blobs = rospy.Publisher("/exploring_challenge", String, queue_size=1)
         self.sub_image = rospy.Subscriber("/camera/rgb/image_rect_color", Image, self.processImage, queue_size=1)
         
@@ -56,7 +54,6 @@ class BlobDetector:
             self.find_color(im, "yellow", cv2.inRange(hsv, np.array([20, 150, 150]), np.array([30, 255, 255])))  # yellow
             self.find_color(im, "blue", cv2.inRange(hsv, np.array([90, 140, 110]), np.array([130, 255, 255])))  # blue
             self.find_color(im, "pink", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # blue
-            self.find_faces(im)  # faces
         else:
             self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
 
@@ -89,34 +86,6 @@ class BlobDetector:
                 cv2.drawContours(im, approx_contours, -1, (100, 255, 100), 2)
                 cv2.imwrite("/home/racecar/challenge_photos/{}{}.png".format(label_color, int(time.clock()*1000)), im)
             print "wrote photo"
-
-    def find_faces(self, passed_im):
-        im = passed_im.copy()
-        gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
-        found_face = False
-        for (x, y, w, h) in faces:
-            roi_gray = gray[y:y+h, x:x+w]
-            roi_color = im[y:y+h, x:x+w]
-            eyes = self.eye_cascade.detectMultiScale(roi_gray)
-            if len(eyes) == 0: continue
-            found_face = True
-            cv2.rectangle(im, (x, y), (x+w, y+h), (100, 255, 100), 2)
-            eh = eyes[0][3]
-            if eh == 0: continue
-            print "face height: {},  eye height: {}".format(h, eh)
-            if abs(h/eh - 1.5) < 1.5:
-                print "detected karaman"
-                cv2.imwrite("/home/racecar/challenge_photos/karaman{}.png".format(int(time.clock()*1000)), im)
-                blob_msg = String()
-                blob_msg.data = "professor karaman"
-                self.pub_blobs.publish(blob_msg)
-            elif abs(h/eh - 6) < 3:
-                print "detected ari"
-                cv2.imwrite("/home/racecar/challenge_photos/ari{}.png".format(int(time.clock()*1000)), im)
-                blob_msg = String()
-                blob_msg.data = "ari"
-                self.pub_blobs.publish(blob_msg)
     def window_runner(self):
         cv2.imshow('HSV', cv2.resize(self.image, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA))
         k = cv2.waitKey(1) & 0xFF
