@@ -61,7 +61,7 @@ class PotentialField:
                 self.turn_start = rospy.get_time()
                 self.turn_count += 1
                 if self.turn_count > 5:
-                    self.turn_vect = 50
+                    self.turn_vect = 10
                 rospy.loginfo("entering shortcut")
 
     def scan_callback(self, msg):

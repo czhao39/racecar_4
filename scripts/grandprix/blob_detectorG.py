@@ -53,8 +53,8 @@ class BlobDetector:
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
         self.msg = BlobDetections()
         if not self.isTesting:
-            self.find_color(im, "red", cv2.inRange(hsv, np.array([5, 210, 125]), np.array([7, 230, 145])))       # red
-            self.find_color(im, "green", cv2.inRange(hsv, np.array([45, 140, 100]), np.array([65, 210, 130])))   # green
+            self.find_color(im, "red", cv2.inRange(hsv, np.array([0, 180, 140]), np.array([10, 255, 210])))       # red
+            self.find_color(im, "green", cv2.inRange(hsv, np.array([30, 140, 130]), np.array([60, 210, 200])))   # green
             #self.find_color(im, "orange", cv2.inRange(hsv, np.array([4, 230, 140]), np.array([6, 255, 200])))   # green
             #self.find_color(im, "yellow", cv2.inRange(hsv, np.array([40, 150, 100]), np.array([50, 200, 175])))  # yellow
             #self.find_color(im, "blue", cv2.inRange(hsv, np.array([90, 140, 110]), np.array([130, 255, 255])))   # blue
