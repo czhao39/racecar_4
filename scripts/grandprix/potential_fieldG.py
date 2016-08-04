@@ -51,9 +51,10 @@ class PotentialField:
     def set_turn_vect(self, msg):
         if len(msg.heights) == 0: return
         closest_ind = max(enumerate(msg.areas), key=lambda x: x[1])[0]
-        if msg.heights[closest_ind] > .3:
+        if msg.heights[closest_ind] > .2:
             if msg.colors[closest_ind] == "blue":
                 self.shortcut_detect = True
+                rospy.loginfo("detected blue")
             elif self.shortcut_detect:
                 if msg.colors[closest_ind] == "red":
                     self.turn_start = rospy.get_time()
@@ -65,7 +66,7 @@ class PotentialField:
                     self.turn_start = rospy.get_time()
                     self.turn_count += 1
                     if self.turn_count > 5:
-                        self.turn_vect = 100
+                        self.turn_vect = 20
                         rospy.loginfo("entering shortcut")
 
     def scan_callback(self, msg):
