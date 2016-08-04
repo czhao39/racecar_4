@@ -35,6 +35,7 @@ class PotentialField:
         self.turn_vect = 0
         self.blob_sub = rospy.Subscriber("/blobs", BlobDetections, self.set_turn_vect, queue_size=1)
         self.turn_start = 0
+        self.turn_count = 0
 
         # subscribe to laserscans. Force output message data to be in numpy arrays.
         rospy.Subscriber("/scan", numpy_msg(LaserScan), self.scan_callback)
@@ -48,16 +49,20 @@ class PotentialField:
 
     def set_turn_vect(self, msg):
         if len(msg.heights) == 0: return
-        closest_ind = max(enumerate(msg.heights), key=lambda x: x[1])[0]
-        if msg.heights[closest_ind] > .06:
+        closest_ind = max(enumerate(msg.areas), key=lambda x: x[1])[0]
+        if msg.heights[closest_ind] > .02:
             if msg.colors[closest_ind] == "red":
-                self.turn_vect = -5
                 self.turn_start = rospy.get_time()
-                rospy.loginfo("avoiding shortcut")
+                self.turn_count += 1
+                if self.turn_count > 3:
+                    self.turn_vect = -50
+                    rospy.loginfo("avoiding shortcut")
             elif msg.colors[closest_ind] == "green":
-                self.turn_vect = 5
                 self.turn_start = rospy.get_time()
-                rospy.loginfo("entering shortcut")
+                self.turn_count += 1
+                if self.turn_count > 5:
+                    self.turn_vect = 10
+                    rospy.loginfo("entering shortcut")
 
     def scan_callback(self, msg):
         # Debug
@@ -80,19 +85,20 @@ class PotentialField:
         kick_y_component = np.zeros(1)
 
         # Vector to farthest point in front of car
-        #farthest_ind = max((i for i in range(180, 901, 4)), key=lambda i: sum(msg.ranges[i:i+4])/4)
+        farthest_ind = max((i for i in range(180, 901, 4)), key=lambda i: sum(msg.ranges[i:i+4])/4)
         #dist = sum(msg.ranges[farthest_ind:farthest_ind+4]) / 4
-        #far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
-        #far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
+        far_x_component = math.cos(math.radians(farthest_ind/4-135)) * 60
+        far_y_component = math.sin(math.radians(farthest_ind/4-135)) * 60
         
-        if self.turn_vect != 0 and rospy.get_time() - self.turn_start > 2:
+        if self.turn_count != 0 and rospy.get_time() - self.turn_start > 2:
+            self.turn_count = 0
             self.turn_vect = 0
         
         #rospy.loginfo("far_vect_x:  {}, far_vect_y:  {}".format(far_x_component, far_y_component))
         
         # Add together the gradients to create a global gradient showing the robot which direction to travel in
-        total_x_component = np.sum(scan_x_components) + kick_x_component
-        total_y_component = np.sum(scan_y_components) + kick_y_component + self.turn_vect
+        total_x_component = np.sum(scan_x_components) + kick_x_component + far_x_component
+        total_y_component = (np.sum(scan_y_components) + kick_y_component + self.turn_vect + far_y_component) / 3
         rospy.loginfo("x comp:  {}, y comp:  {}i\n".format(total_x_component, total_y_component))
 
         # Transform this gradient vector into a PoseStamped object
