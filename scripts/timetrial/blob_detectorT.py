@@ -51,10 +51,10 @@ class BlobDetector:
         if not self.isTesting:
             self.find_color(im, "green", cv2.inRange(hsv, np.array([45, 140, 100]), np.array([65, 210, 130])))   # green
             self.find_color(im, "red", cv2.inRange(hsv, np.array([5, 210, 125]), np.array([7, 230, 145])))       # red
-            #self.find_color(im, "orange", cv2.inRange(hsv, np.array([4, 230, 140]), np.array([6, 255, 200])))   # green
-            #self.find_color(im, "yellow", cv2.inRange(hsv, np.array([40, 150, 100]), np.array([50, 200, 175])))  # yellow
+            self.find_color(im, "orange", cv2.inRange(hsv, np.array([4, 230, 140]), np.array([6, 255, 200])))   # green
+            self.find_color(im, "yellow", cv2.inRange(hsv, np.array([40, 150, 100]), np.array([50, 200, 175])))  # yellow
+            self.find_color(im, "pink", cv2.inRange(hsv, np.array([170, 210, 160]), np.array([180, 230, 190])))    # pink
             #self.find_color(im, "blue", cv2.inRange(hsv, np.array([90, 140, 110]), np.array([130, 255, 255])))   # blue
-            #self.find_color(im, "pink", cv2.inRange(hsv, np.array([170, 210, 160]), np.array([180, 230, 190])))    # pink
         else:
             self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
 
@@ -66,27 +66,25 @@ class BlobDetector:
         approx_contours = []
         for c in contours:
             area = cv2.contourArea(c)
-            if area < 500: 
+            if area < 400: 
                 continue
             perim = cv2.arcLength(c, True)
             approx = cv2.approxPolyDP(c, .05*perim, True)
             if len(approx) == 4:
                 approx_contours.append(approx)
-                blob_msg = String()
-                blob_msg.data = label_color
-                self.pub_blobs.publish(blob_msg)
+                self.msg.colors.append(label_color)
                 moments = cv2.moments(c)
                 center = (int(moments['m10']/moments['m00']), int(moments['m01']/moments['m00']))
+                msg_loc = Point()
+                msg_loc.x, msg_loc.y = float(center[0]) / len(im[0]), float(center[1]) / len(im)
+                self.msg.locations.append(msg_loc)
+                self.msg.heights.append(float((max(approx, key=lambda x: x[0][1])[0][1] - min(approx, key=lambda x: x[0][1])[0][1])) / len(im))
                 cv2.putText(im, label_color, center, cv2.FONT_HERSHEY_PLAIN, 2, (100, 255, 100))
-                print "Moment:  ({}, {})".format(center[0], center[1])
                 print "Label color:  {}".format(label_color)
+
         if approx_contours:
             if self.isTesting:
                 cv2.drawContours(self.image, approx_contours, -1, (100, 255, 100), 2)
-            else:
-                cv2.drawContours(im, approx_contours, -1, (100, 255, 100), 2)
-                cv2.imwrite("/home/racecar/challenge_photos/{}{}.png".format(label_color, int(time.clock()*1000)), im)
-            print "wrote photo"
     def window_runner(self):
         cv2.imshow('HSV', cv2.resize(self.image, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA))
         k = cv2.waitKey(1) & 0xFF
