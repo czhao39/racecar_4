@@ -35,6 +35,7 @@ class PotentialField:
         self.turn_vect = 0
         self.blob_sub = rospy.Subscriber("/blobs", BlobDetections, self.set_turn_vect, queue_size=1)
         self.turn_start = 0
+        self.turn_count = 0
 
         # subscribe to laserscans. Force output message data to be in numpy arrays.
         rospy.Subscriber("/scan", numpy_msg(LaserScan), self.scan_callback)
@@ -53,10 +54,15 @@ class PotentialField:
             if msg.colors[closest_ind] == "red":
                 self.turn_vect = -5
                 self.turn_start = rospy.get_time()
+                self.turn_count += 1
+                if self.turn_count > 5:
+                    self.turn_vect = -5
                 rospy.loginfo("avoiding shortcut")
             elif msg.colors[closest_ind] == "green":
-                self.turn_vect = 5
                 self.turn_start = rospy.get_time()
+                self.turn_count += 1
+                if self.turn_count > 5:
+                    self.turn_vect = 5
                 rospy.loginfo("entering shortcut")
 
     def scan_callback(self, msg):
@@ -85,8 +91,12 @@ class PotentialField:
         #far_x_component = dist * math.cos(math.radians(farthest_ind/4-135)) * 1
         #far_y_component = dist * math.sin(math.radians(farthest_ind/4-135)) * 1
         
-        if self.turn_vect != 0 and rospy.get_time() - self.turn_start > 2:
-            self.turn_vect = 0
+        if self.turn_count != 0:
+            if rospy.get_time() - self.turn_start > 1:
+                self.turn_count = 0
+            if rospy.get_time() - self.turn_start > 2:
+                self.turn_vect = 0
+        
         
         #rospy.loginfo("far_vect_x:  {}, far_vect_y:  {}".format(far_x_component, far_y_component))
         
