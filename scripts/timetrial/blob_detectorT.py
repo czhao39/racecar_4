@@ -81,7 +81,6 @@ class BlobDetector:
                 self.msg.heights.append(float((max(approx, key=lambda x: x[0][1])[0][1] - min(approx, key=lambda x: x[0][1])[0][1])) / len(im))
                 cv2.putText(im, label_color, center, cv2.FONT_HERSHEY_PLAIN, 2, (100, 255, 100))
                 print "Label color:  {}".format(label_color)
-
         if approx_contours:
             if self.isTesting:
                 cv2.drawContours(self.image, approx_contours, -1, (100, 255, 100), 2)
