@@ -95,14 +95,15 @@ class BlobDetector:
         #im = im[len(im)*.4:]
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
         if not self.isTesting:
-            self.find_color(im, "red", cv2.bitwise_or(cv2.inRange(hsv, np.array([0, 150, 150]), np.array([10, 255, 255])), cv2.inRange(hsv, np.array([170, 150, 150]), np.array([180, 255, 255]))))  # red
-            self.find_color(im, "green", cv2.inRange(hsv, np.array([40, 100, 100]), np.array([85, 255, 255])))  # green
-            self.find_color(im, "yellow", cv2.inRange(hsv, np.array([20, 150, 150]), np.array([30, 255, 255])))  # yellow
+            self.find_color(im, "red", cv2.inRange(hsv, np.array([0, 130, 50]), np.array([10, 255, 140])))     # red
+            self.find_color(im, "green", cv2.inRange(hsv, np.array([40, 100, 40]), np.array([85, 255, 200])))  # green
+            self.find_color(im, "yellow", cv2.inRange(hsv, np.array([20, 165, 80]), np.array([40, 200, 120])))  # yellow
             self.find_color(im, "blue", cv2.inRange(hsv, np.array([100, 115, 55]), np.array([130, 255, 255])))  # blue
-            self.challenge_color(im, "pink", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # pink
+            self.challenge_color(im, "pink", cv2.inRange(hsv, np.array([120, 80, 65]), np.array([180, 185, 170])))  # pink
         else:
-            self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
-            #self.challenge_color(im, "challenge testing", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # pink
+        	pass
+            #self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
+            #self.challenge_color(im, "challenge testing", cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))  # pink
     def find_color(self, passed_im, label_color, mask):
     	im = passed_im.copy()
         if self.isTesting:
@@ -126,7 +127,7 @@ class BlobDetector:
                 cv2.putText(im, "{} rectangle".format(label_color), center, cv2.FONT_HERSHEY_PLAIN, 2, (100, 255, 100))
                 cv2.drawContours(im, [approx], -1, (100, 255, 100), 2)
                 cv2.imwrite("/home/racecar/challenge_photos1/{}rectangle{}.png".format(label_color, int(time.clock()*1000)), im)
-
+                print "{}square".format(label_color)
             elif abs(len(approx)-12) <= 1:  # cross
             	approx_contours.append(approx)
                 cross_msg = String()
@@ -138,8 +139,9 @@ class BlobDetector:
                 cv2.putText(im, "{} cross".format(label_color), center, cv2.FONT_HERSHEY_PLAIN, 2, (100, 255, 100))
                 cv2.drawContours(im, [approx], -1, (100, 255, 100), 2)
                 cv2.imwrite("/home/racecar/challenge_photos1/{}cross{}.png".format(label_color, int(time.clock()*1000)), im)
-
+                print "{}cross".format(label_color)
             elif abs(len(approx)-8) <= 2:  # circle
+
             	approx_contours.append(approx)
                 circ_msg = String()
                 circ_msg.data = "{} circle".format(label_color)
@@ -150,7 +152,7 @@ class BlobDetector:
                 cv2.putText(im, "{} circle".format(label_color), center, cv2.FONT_HERSHEY_PLAIN, 2, (100, 255, 100))
                 cv2.drawContours(im, [approx], -1, (100, 255, 100), 2)
                 cv2.imwrite("/home/racecar/challenge_photos1/{}circle{}.png".format(label_color, int(time.clock()*1000)), im)
-
+                print "{}circle".format(label_color)
             if self.isTesting:
                 cv2.drawContours(self.image, approx_contours, -1, (100, 255, 100), 2)
             #else:
@@ -209,6 +211,8 @@ class BlobDetector:
                 cv2.drawContours(im, [approx], -1, (100, 255, 100), 2)
                 cv2.imwrite("/home/racecar/challenge_photos/{}{}{}.png".format(label_color, classification, int(time.clock()*1000)), im)
                 print classification
+            if self.isTesting:
+                cv2.drawContours(self.image, approx_contours, -1, (100, 255, 100), 2)
     def window_runner(self):
         cv2.imshow('HSV', cv2.resize(self.image, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA))
         k = cv2.waitKey(1) & 0xFF
