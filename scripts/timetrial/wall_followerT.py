@@ -28,18 +28,23 @@ class WallFollower():
 	print "wall following"
 
     def blob_callback(self, msg):
-        if msg.data == "red":  # right
-            self.mult = 1
-            self.start_ind = 80
-            self.end_ind = 500
-            self.ddes = .4
-            self.turn_start = rospy.get_time()
-        elif msg.data == "green":  # left
-            self.mult = -1
-            self.start_ind = 580
-            self.end_ind = 1000
-            self.ddes = .4
-            self.turn_start = rospy.get_time()
+        if len(msg.heights) == 0: return
+        closest_ind = max(enumerate(msg.heights), key=lambda x: x[1])[0]
+        if msg.heights[closest_ind] > .06:
+            if msg.colors[closest_ind] == "red":
+                self.mult = 1
+                self.start_ind = 80
+                self.end_ind = 500
+                self.ddes = .4
+                self.turn_start = rospy.get_time()
+                rospy.loginfo("avoiding shortcut")
+            elif msg.colors[closest_ind] == "green":
+                self.mult = -1
+                self.start_ind = 580
+                self.end_ind = 1000
+                self.ddes = .4
+                self.turn_start = rospy.get_time()
+                rospy.loginfo("entering shortcut")
 
     def pid_callback(self, msg):
         if self.ddes != .8 and rospy.get_time() - self.turn_start > 1:

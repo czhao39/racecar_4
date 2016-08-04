@@ -16,17 +16,15 @@ import time
 import sys
 import RacecarUtilities1 as RacecarUtilities
 
-#SERTAC_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_challenge_one/scripts/sertac.png',0), (100,100), interpolation = cv2.INTER_AREA)
-#ARI_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_challenge_one/scripts/ari.png',0), (100,100), interpolation = cv2.INTER_AREA)
-#CAT_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_challenge_one/scripts/cat.png',0), (100,100), interpolation = cv2.INTER_AREA)
-#RACECAR_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_challenge_one/scripts/racecar.png',0), (100,100), interpolation = cv2.INTER_AREA)
+SERTAC_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/sertac.png',0), (100,100), interpolation = cv2.INTER_AREA)
+ARI_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/ari.png',0), (100,100), interpolation = cv2.INTER_AREA)
+CAT_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/cat.png',0), (100,100), interpolation = cv2.INTER_AREA)
+RACECAR_IMG = cv2.resize(cv2.imread('/home/racecar/racecar-ws/src/racecar_4/scripts/techchallenge1/racecar.png',0), (100,100), interpolation = cv2.INTER_AREA)
 
 class BlobDetector:
     def __init__(self):
         self.isTesting = False
-        self.eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')  
         self.bridge = CvBridge()
-        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.pub_blobs = rospy.Publisher("/exploring_challenge", String, queue_size=1)
         self.sub_image = rospy.Subscriber("/camera/rgb/image_rect_color", Image, self.processImage, queue_size=1)
         
@@ -104,11 +102,13 @@ class BlobDetector:
             self.challenge_color(im, "pink", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # pink
         else:
             self.find_color(im, "testing",cv2.inRange(hsv, np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu])))
-            self.challenge_color(im, "challenge testing", np.array([self.hl, self.sl, self.vl]), np.array([self.hu, self.su, self.vu]))  # pink
+            #self.challenge_color(im, "challenge testing", cv2.inRange(hsv, np.array([135, 80, 90]), np.array([165, 255, 255])))  # pink
     def find_color(self, passed_im, label_color, mask):
+    	im = passed_im.copy()
         if self.isTesting:
             self.image = im
         contours = cv2.findContours(mask, cv2.cv.CV_RETR_TREE, cv2.cv.CV_CHAIN_APPROX_SIMPLE)[0]
+        approx_contours = []
         for c in contours:
             area = cv2.contourArea(c)
             if area < 500: 
@@ -116,6 +116,7 @@ class BlobDetector:
             perim = cv2.arcLength(c, True)
             approx = cv2.approxPolyDP(c, .02*perim, True)
             if len(approx) == 4:  # rectangle
+            	approx_contours.append(approx)
                 rect_msg = String()
                 rect_msg.data = "{} rectangle".format(label_color)
                 self.pub_blobs.publish(rect_msg)
@@ -127,6 +128,7 @@ class BlobDetector:
                 cv2.imwrite("/home/racecar/challenge_photos1/{}rectangle{}.png".format(label_color, int(time.clock()*1000)), im)
 
             elif abs(len(approx)-12) <= 1:  # cross
+            	approx_contours.append(approx)
                 cross_msg = String()
                 cross_msg.data = "{} cross".format(label_color)
                 self.pub_blobs.publish(cross_msg)
@@ -138,6 +140,7 @@ class BlobDetector:
                 cv2.imwrite("/home/racecar/challenge_photos1/{}cross{}.png".format(label_color, int(time.clock()*1000)), im)
 
             elif abs(len(approx)-8) <= 2:  # circle
+            	approx_contours.append(approx)
                 circ_msg = String()
                 circ_msg.data = "{} circle".format(label_color)
                 self.pub_blobs.publish(circ_msg)
@@ -148,15 +151,17 @@ class BlobDetector:
                 cv2.drawContours(im, [approx], -1, (100, 255, 100), 2)
                 cv2.imwrite("/home/racecar/challenge_photos1/{}circle{}.png".format(label_color, int(time.clock()*1000)), im)
 
-            #if self.isTesting:
-            #    cv2.drawContours(self.image, approx_contours, -1, (100, 255, 100), 2)
+            if self.isTesting:
+                cv2.drawContours(self.image, approx_contours, -1, (100, 255, 100), 2)
             #else:
             #    cv2.drawContours(im, approx_contours, -1, (100, 255, 100), 2)
     def challenge_color(self, passed_im, label_color, mask):
+        im = passed_im.copy()
         if self.isTesting:
             self.image = im
         contours = cv2.findContours(mask, cv2.cv.CV_RETR_TREE, cv2.cv.CV_CHAIN_APPROX_SIMPLE)[0]
         crop_img = None
+        approx_contours = []
         for c in contours:
             area = cv2.contourArea(c)
             if area < 500: 
@@ -164,7 +169,7 @@ class BlobDetector:
             perim = cv2.arcLength(c, True)
             approx = cv2.approxPolyDP(c, .03*perim, True)
             if len(approx) == 4:  # rectangle
-
+            	approx_contours.append(approx)
                 flattenPoints = approx.reshape(4, 2) #Reshape retval of approxPolyDP to just np.ndarry() of points
                 
                 #Routine to find TopLeft Corner of a list of points returned by approxPolyDP            
