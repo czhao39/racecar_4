@@ -49,7 +49,7 @@ class BlobDetector:
         im = self.bridge.imgmsg_to_cv2(image_msg)
         #height, width = im.shape[:2]
         #im = im[50:int(height/2)-40, 0:width]
-        #im = im[len(im)*.4:]
+        im = im[:.3*len(im)]
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
         self.msg = BlobDetections()
         if not self.isTesting:
