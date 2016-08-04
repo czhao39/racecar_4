@@ -78,6 +78,7 @@ class BlobDetector:
             approx = cv2.approxPolyDP(c, .05*perim, True)
             if len(approx) == 4:
                 approx_contours.append(approx)
+                self.msg.areas.append(area)
                 self.msg.colors.append(label_color)
                 moments = cv2.moments(c)
                 center = (int(moments['m10']/moments['m00']), int(moments['m01']/moments['m00']))

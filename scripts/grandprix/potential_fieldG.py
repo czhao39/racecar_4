@@ -48,7 +48,7 @@ class PotentialField:
 
     def set_turn_vect(self, msg):
         if len(msg.heights) == 0: return
-        closest_ind = max(enumerate(msg.heights), key=lambda x: x[1])[0]
+        closest_ind = max(enumerate(msg.areas), key=lambda x: x[1])[0]
         if msg.heights[closest_ind] > .06:
             if msg.colors[closest_ind] == "red":
                 self.turn_vect = -5
